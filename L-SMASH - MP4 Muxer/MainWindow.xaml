@@ -7,7 +7,7 @@
         xmlns:talex="http://schemas.talex-soft.com/2010/xaml/presentation"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="L_SMASH___MP4_Muxer.MainWindow"
         mc:Ignorable="d"
-        Title="L-SMASH - MP4 Muxer" Height="600" Width="525" MinHeight="600" MinWidth="525">
+        Title="L-SMASH - MP4 Muxer" Height="600" Width="525" MinHeight="600" MinWidth="525" MaxHeight="600" MaxWidth="525" ResizeMode="NoResize">
     <Grid>
         <Grid Margin="5,0,5,5">
             <Grid.RowDefinitions>

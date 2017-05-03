@@ -647,7 +647,7 @@ namespace L_SMASH___MP4_Muxer
 
         private void ShowAbout(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("L-SMASH Muxer GUI\n\nThis is a GUI which use l-smash to mux video and audio");
+            MessageBox.Show("L-SMASH - MP4 Muxer\n\nThis is a GUI which use l-smash to mux video and audio");
         }
 
         private void ClearAll(object sender, RoutedEventArgs e)
