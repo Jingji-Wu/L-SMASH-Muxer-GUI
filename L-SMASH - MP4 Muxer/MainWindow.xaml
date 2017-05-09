@@ -7,7 +7,7 @@
         xmlns:talex="clr-namespace:TAlex.WPF.Controls"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="L_SMASH___MP4_Muxer.MainWindow"
         mc:Ignorable="d"
-        Title="L-SMASH - MP4 Muxer" Height="600" Width="525" MinHeight="600" MinWidth="525" MaxHeight="600" MaxWidth="525" ResizeMode="NoResize">
+        Title="L-SMASH - MP4 Muxer" Height="600" Width="525" MinHeight="600" MinWidth="525" MaxHeight="600" MaxWidth="525" ResizeMode="NoResize" Icon="Lm.ico">
     <Grid>
         <Grid Margin="5,0,5,5">
             <Grid.RowDefinitions>
