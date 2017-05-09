@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:L_SMASH___MP4_Muxer"
-        xmlns:talex="http://schemas.talex-soft.com/2010/xaml/presentation"
+        xmlns:talex="clr-namespace:TAlex.WPF.Controls"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="L_SMASH___MP4_Muxer.MainWindow"
         mc:Ignorable="d"
         Title="L-SMASH - MP4 Muxer" Height="600" Width="525" MinHeight="600" MinWidth="525" MaxHeight="600" MaxWidth="525" ResizeMode="NoResize">
@@ -271,7 +271,7 @@
                         </ComboBox>
                         <TextBlock x:Name="AName_Block_1" Grid.Column="2" HorizontalAlignment="Center" Margin="0" Grid.Row="1" TextWrapping="Wrap" Text="Name" FontSize="14" VerticalAlignment="Center"/>
                         <TextBox x:Name="ia_name_1" Margin="0,2" Grid.Row="1" Grid.Column="3" FontSize="14" VerticalContentAlignment="Center"/>
-                        <Button x:Name="ia_clear_1" Content="X" Grid.Column="4" Margin="8,2" Grid.Row="1" Click="ia_clear_Click"/>
+                        <Button x:Name="ia_clear_1" Content="X" Grid.Column="4" Margin="8,2" Grid.Row="1" Click="ia_clear_Click"/> 
                         <TextBlock x:Name="Delay_Block_1" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="Delay" FontSize="14" VerticalAlignment="Center"/>
                         <talex:NumericUpDown x:Name="ia_delay_1" Grid.Column="1" Grid.Row="2"  Margin="0,2" Value="0" Minimum="-10000" Maximum="10000"/>
                     </Grid>
