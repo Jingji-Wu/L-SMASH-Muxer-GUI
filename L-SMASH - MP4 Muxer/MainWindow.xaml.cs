@@ -15,6 +15,10 @@ using System.Windows.Navigation;
 using MediaInfoLib;
 using System.Diagnostics;
 using TAlex.WPF.Controls;
+using System.Collections;
+using System.Globalization;
+using System.Resources;
+using L_SMASH___MP4_Muxer.Properties;
 
 namespace L_SMASH___MP4_Muxer
 {
@@ -26,6 +30,13 @@ namespace L_SMASH___MP4_Muxer
         public MainWindow()
         {
             InitializeComponent();
+            audio_languages = AudioLanguage.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            foreach (DictionaryEntry entry in audio_languages)
+            {
+                String language = entry.Key.ToString();
+                ia_language_1.Items.Add(new ComboBoxItem() { Content = language, });
+            }
+            setStatusText("Ready");
         }
 
         private String get_video_FPS(String fileName)
@@ -208,193 +219,6 @@ namespace L_SMASH___MP4_Muxer
             NumericUpDown audio_delay = grid.Children[9] as NumericUpDown;
             return audio_delay;
         }
-
-        private static readonly String[] AudioLanguage = new String[] {
-            "abk",
-            "aar",
-            "afr",
-            "aka",
-            "alb",
-            "amh",
-            "ara",
-            "arg",
-            "arm",
-            "asm",
-            "ava",
-            "ave",
-            "aym",
-            "aze",
-            "bam",
-            "bak",
-            "baq",
-            "bel",
-            "ben",
-            "bih",
-            "bis",
-            "bos",
-            "bre",
-            "bul",
-            "bur",
-            "cat",
-            "cha",
-            "che",
-            "nya",
-            "chi",
-            "chv",
-            "cor",
-            "cos",
-            "cre",
-            "hrv",
-            "cze",
-            "dan",
-            "div",
-            "dut",
-            "dzo",
-            "eng",
-            "epo",
-            "est",
-            "ewe",
-            "fao",
-            "fij",
-            "fin",
-            "fre",
-            "ful",
-            "glg",
-            "geo",
-            "ger",
-            "gre",
-            "grn",
-            "guj",
-            "hat",
-            "hau",
-            "heb",
-            "her",
-            "hin",
-            "hmo",
-            "hun",
-            "ina",
-            "ind",
-            "ile",
-            "gle",
-            "ibo",
-            "ipk",
-            "ido",
-            "ice",
-            "ita",
-            "iku",
-            "jpn",
-            "jav",
-            "kal",
-            "kan",
-            "kau",
-            "kas",
-            "kaz",
-            "khm",
-            "kik",
-            "kin",
-            "kir",
-            "kom",
-            "kon",
-            "kor",
-            "kur",
-            "kua",
-            "lat",
-            "ltz",
-            "lug",
-            "lim",
-            "lin",
-            "lao",
-            "lit",
-            "lub",
-            "lav",
-            "glv",
-            "mac",
-            "mlg",
-            "may",
-            "mal",
-            "mlt",
-            "mao",
-            "mar",
-            "mah",
-            "mon",
-            "nau",
-            "nav",
-            "nob",
-            "nde",
-            "nep",
-            "ndo",
-            "nno",
-            "nor",
-            "iii",
-            "nbl",
-            "oci",
-            "oji",
-            "chu",
-            "orm",
-            "ori",
-            "oss",
-            "pan",
-            "pli",
-            "per",
-            "pol",
-            "pus",
-            "por",
-            "que",
-            "roh",
-            "run",
-            "rum",
-            "rus",
-            "san",
-            "srd",
-            "snd",
-            "sme",
-            "smo",
-            "sag",
-            "srp",
-            "gla",
-            "sna",
-            "sin",
-            "slo",
-            "slv",
-            "som",
-            "sot",
-            "azb",
-            "spa",
-            "sun",
-            "swa",
-            "ssw",
-            "swe",
-            "tam",
-            "tel",
-            "tgk",
-            "tha",
-            "tir",
-            "tib",
-            "tuk",
-            "tgl",
-            "tsn",
-            "ton",
-            "tur",
-            "tso",
-            "tat",
-            "twi",
-            "tah",
-            "uig",
-            "ukr",
-            "urd",
-            "uzb",
-            "ven",
-            "vie",
-            "vol",
-            "wln",
-            "wel",
-            "wol",
-            "fry",
-            "xho",
-            "yid",
-            "yor",
-            "zha",
-            "zul"};
         
         private Grid addNewAudioGrid(int ntracks)
         {
@@ -451,8 +275,9 @@ namespace L_SMASH___MP4_Muxer
                 FontSize = 14,
                 IsEditable = true,
             };
-            foreach (String language in AudioLanguage)
+            foreach (DictionaryEntry entry in audio_languages)
             {
+                String language = entry.Key.ToString();
                 AI_Language.Items.Add(new ComboBoxItem() { Content = language, });
             }
             TextBlock AName_Block = new TextBlock()
@@ -643,6 +468,11 @@ namespace L_SMASH___MP4_Muxer
             }
         }
 
+        private void logs_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            logs.ScrollToEnd();
+        }
+
         private void ShowAbout(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("L-SMASH - MP4 Muxer\n\nThis is a GUI which use l-smash to mux video and audio");
@@ -686,7 +516,8 @@ namespace L_SMASH___MP4_Muxer
                 return;
             }
             logs.Clear();
-            logs.AppendText("Processing...\r\n");
+            //logs.AppendText("Processing...\r\n");
+            setStatusText("Processing...");
             start_button.IsEnabled = false;
             await ExcuteMuxer(arg_muxer);
         }
@@ -723,7 +554,8 @@ namespace L_SMASH___MP4_Muxer
                 MessageBox.Show(ex.Message);
             }
             setStartButton(true);
-            appendLogText("Finished.\r\n");
+            //appendLogText("Finished.\r\n");
+            setStatusText("Finished");
         }
 
         private void outputHandler(object sender, DataReceivedEventArgs e)
@@ -755,6 +587,18 @@ namespace L_SMASH___MP4_Muxer
             else
             {
                 this.logs.AppendText(text + "\r\n");
+            }
+        }
+
+        private void setStatusText(String text)
+        {
+            if (!this.Status_Block.Dispatcher.CheckAccess())
+            {
+                this.Dispatcher.Invoke(() => setStatusText(text));
+            }
+            else
+            {
+                this.Status_Block.Text = text;
             }
         }
 
@@ -891,5 +735,7 @@ namespace L_SMASH___MP4_Muxer
             return reg.IsMatch(str);
 
         }
+
+        private ResourceSet audio_languages;
     }
 }
