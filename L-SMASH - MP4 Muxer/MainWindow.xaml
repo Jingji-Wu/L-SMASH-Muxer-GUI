@@ -10,8 +10,26 @@
         Title="L-SMASH - MP4 Muxer" Height="625" Width="525" MinHeight="600" MinWidth="525" MaxHeight="625" MaxWidth="525" ResizeMode="NoResize" Icon="Lm.ico">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="60*" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
             <StatusBarItem>
                 <TextBlock x:Name="Status_Block" TextWrapping="Wrap"/>
+            </StatusBarItem>
+            <!--<Separator Grid.Column="1" />-->
+            <StatusBarItem Grid.Column="2">
+                <Grid Width="160" Height="16">
+                    <ProgressBar x:Name="Status_Progress" Margin="0"/>
+                    <TextBlock Text="{Binding ElementName=Status_Progress, Path=Value, StringFormat={}{0:0}%}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
             </StatusBarItem>
         </StatusBar>
         <Grid>
@@ -66,8 +84,8 @@
                 <TabControl x:Name="Audio_Tab" Margin="0" Grid.Row="1" VerticalAlignment="Top" Height="115">
                     <TabControl.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Add track" Click="addAudioTrack" ToolTip="Add a new audio track"/>
-                            <MenuItem x:Name="removeTrackMenu" Header="Remove track" IsEnabled="False" Click="removeAudioTrack" ToolTipService.ShowOnDisabled="True" ToolTip="Remove the last audio track"/>
+                            <MenuItem Header="Add track" Click="AddAudioTrack" ToolTip="Add a new audio track"/>
+                            <MenuItem x:Name="removeTrackMenu" Header="Remove track" IsEnabled="False" Click="RemoveAudioTrack" ToolTipService.ShowOnDisabled="True" ToolTip="Remove the last audio track"/>
                         </ContextMenu>
                     </TabControl.ContextMenu>
                     <TabItem Header="Audio 1">

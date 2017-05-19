@@ -78,6 +78,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Job\AudioInfo.cs" />
+    <Compile Include="Job\ChapterInfo.cs" />
+    <Compile Include="Job\Job.cs" />
+    <Compile Include="Job\JobProcessor.cs" />
+    <Compile Include="Job\VideoInfo.cs" />
     <Compile Include="Properties\AudioLanguage.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

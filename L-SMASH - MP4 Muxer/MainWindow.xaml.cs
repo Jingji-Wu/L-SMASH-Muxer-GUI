@@ -19,6 +19,8 @@ using System.Collections;
 using System.Globalization;
 using System.Resources;
 using L_SMASH___MP4_Muxer.Properties;
+using L_SMASH___MP4_Muxer.Job;
+using System.Text.RegularExpressions;
 
 namespace L_SMASH___MP4_Muxer
 {
@@ -36,7 +38,21 @@ namespace L_SMASH___MP4_Muxer
                 String language = entry.Key.ToString();
                 ia_language_1.Items.Add(new ComboBoxItem() { Content = language, });
             }
-            setStatusText("Ready");
+            FileInfo lsmash = new FileInfo(".\\muxer.exe");
+            if (!lsmash.Exists)
+            {
+                MessageBox.Show("muxer.exe is missing");
+                isProcessing = false;
+                SetStartButton(false);
+                SetProgressValue(0);
+                SetStatusText("muxer.exe is missing");
+            }
+            jobProcessor = new JobProcessor(lsmash.FullName);
+            jobProcessor.ProgressChanged += progress => SetProgressValue(progress);
+            jobProcessor.LogChanged += data => AppendLogText(data);
+            isProcessing = false;
+            SetProgressValue(0);
+            SetStatusText("Ready");
         }
 
         private String get_video_FPS(String fileName)
@@ -121,6 +137,14 @@ namespace L_SMASH___MP4_Muxer
             iv_FPS.Text = "";
         }
 
+        private VideoInfo GenerateVideoInfo()
+        {
+            int PAR_n = (String.IsNullOrEmpty(iv_PAR_numberator.Text)) ? 0 : Convert.ToInt32(iv_PAR_numberator.Text);
+            int PAR_d = (String.IsNullOrEmpty(iv_PAR_denominator.Text)) ? 0 : Convert.ToInt32(iv_PAR_denominator.Text);
+            VideoInfo videoInfo = new VideoInfo(iv_path.Text, iv_FPS.Text, iv_name.Text, PAR_n, PAR_d);
+            return videoInfo;
+        }
+
         private void ia_file_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
@@ -170,10 +194,10 @@ namespace L_SMASH___MP4_Muxer
         {
             Button button = sender as Button;
             int index = (int)Char.GetNumericValue(button.Name[button.Name.Length - 1]);
-            clearAudioTrack(index);
+            ClearAudioTrack(index);
         }
 
-        private void clearAudioTrack(int index)
+        private void ClearAudioTrack(int index)
         {
             TabItem item = Audio_Tab.Items[index - 1] as TabItem;
             Grid grid = item.Content as Grid;
@@ -188,7 +212,7 @@ namespace L_SMASH___MP4_Muxer
             nud.Value = 0;
         }
 
-        private TextBox getAudioPathTB(int index)
+        private TextBox GetAudioPathTB(int index)
         {
             TabItem item = Audio_Tab.Items[index - 1] as TabItem;
             Grid grid = item.Content as Grid;
@@ -196,7 +220,7 @@ namespace L_SMASH___MP4_Muxer
             return audio_path;
         }
 
-        private TextBox getAudioNameTB(int index)
+        private TextBox GetAudioNameTB(int index)
         {
             TabItem item = Audio_Tab.Items[index - 1] as TabItem;
             Grid grid = item.Content as Grid;
@@ -204,7 +228,7 @@ namespace L_SMASH___MP4_Muxer
             return audio_name;
         }
 
-        private ComboBox getAudioLanguageCB(int index)
+        private ComboBox GetAudioLanguageCB(int index)
         {
             TabItem item = Audio_Tab.Items[index - 1] as TabItem;
             Grid grid = item.Content as Grid;
@@ -212,7 +236,7 @@ namespace L_SMASH___MP4_Muxer
             return audio_language;
         }
 
-        private NumericUpDown getAudioDelayNUD(int index)
+        private NumericUpDown GetAudioDelayNUD(int index)
         {
             TabItem item = Audio_Tab.Items[index - 1] as TabItem;
             Grid grid = item.Content as Grid;
@@ -220,7 +244,7 @@ namespace L_SMASH___MP4_Muxer
             return audio_delay;
         }
         
-        private Grid addNewAudioGrid(int ntracks)
+        private Grid GenerateNewAudioGrid(int ntracks)
         {
             Thickness BlockThicknes = new Thickness(0, 0, 0, 0);
             Thickness TextBoxThickness = new Thickness(0, 2, 0, 2);
@@ -381,14 +405,14 @@ namespace L_SMASH___MP4_Muxer
             return grid;
         }
 
-        private void addAudioTrack(object sender, RoutedEventArgs e)
+        private void AddAudioTrack(object sender, RoutedEventArgs e)
         {
             int ntracks = Audio_Tab.Items.Count;
             TabItem newAudioTrack = new TabItem()
             {
                 Header = "Audio " + (++ntracks),
             };
-            newAudioTrack.Content = addNewAudioGrid(ntracks);
+            newAudioTrack.Content = GenerateNewAudioGrid(ntracks);
 
             Audio_Tab.Items.Add(newAudioTrack);
             if (removeTrackMenu.IsEnabled == false)
@@ -398,7 +422,7 @@ namespace L_SMASH___MP4_Muxer
             Audio_Tab.SelectedItem = newAudioTrack;
         }
 
-        private void removeAudioTrack(object sender, RoutedEventArgs e)
+        private void RemoveAudioTrack(object sender, RoutedEventArgs e)
         {
             int ntracks = Audio_Tab.Items.Count;
             Audio_Tab.Items.RemoveAt(--ntracks);
@@ -406,6 +430,20 @@ namespace L_SMASH___MP4_Muxer
             {
                 removeTrackMenu.IsEnabled = false;
             }
+        }
+        
+        private List<AudioInfo> GenerateAudioInfoList()
+        {
+            List<AudioInfo> audioInfoList = new List<AudioInfo>();
+            int ntracks = Audio_Tab.Items.Count;
+            for (int i = 1; i <= ntracks; ++i)
+            {
+                AudioInfo audioInfo = new AudioInfo(
+                    GetAudioPathTB(i).Text, GetAudioLanguageCB(i).Text,
+                    GetAudioNameTB(i).Text, Convert.ToInt32(GetAudioDelayNUD(i).Value));
+                audioInfoList.Add(audioInfo);
+            }
+            return audioInfoList;
         }
 
         private void ic_file_Click(object sender, RoutedEventArgs e)
@@ -446,6 +484,12 @@ namespace L_SMASH___MP4_Muxer
         private void Chapter_Clear(object sender, MouseButtonEventArgs e)
         {
             ic_path.Clear();
+        }
+
+        private ChapterInfo GenerateChapterInfo()
+        {
+            ChapterInfo chapterInfo = new ChapterInfo(ic_path.Text);
+            return chapterInfo;
         }
 
         private void out_file_Click(object sender, RoutedEventArgs e)
@@ -491,7 +535,7 @@ namespace L_SMASH___MP4_Muxer
             int ntracks = Audio_Tab.Items.Count;
             for (int i = 1; i <= ntracks; ++i)
             {
-                clearAudioTrack(i);
+                ClearAudioTrack(i);
             }
 
             // clear chapter's args
@@ -500,77 +544,36 @@ namespace L_SMASH___MP4_Muxer
             // clear output's args
             out_path.Clear();
 
-            logs.Clear();
+            if (!isProcessing)
+            {
+                logs.Clear();
+                SetStatusText("Ready");
+                SetProgressValue(0);
+            } 
         }
 
-        private async void Start_Click(object sender, RoutedEventArgs e)
+        private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (out_path.Text == "")
             {
                 MessageBox.Show("Output not set");
                 return;
             }
-            String arg_muxer = GetMuxerArgs();
-            if (arg_muxer == null)
-            {
-                return;
-            }
             logs.Clear();
-            //logs.AppendText("Processing...\r\n");
-            setStatusText("Processing...");
+            Status_Block.Text = "Processing...";
             start_button.IsEnabled = false;
-            await ExcuteMuxer(arg_muxer);
+            SetProgressValue(0);
+
+            job = new MuxerJob(GenerateVideoInfo(), GenerateAudioInfoList(), GenerateChapterInfo(), out_path.Text);
+            isProcessing = true;
+            jobProcessor.StartMuxer(job);
         }
 
-        private async Task ExcuteMuxer(String cmd)
-        {
-            String Excutable = "muxer";
-            try
-            {
-                Process p = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = System.Windows.Forms.Application.StartupPath + "\\"+ Excutable,
-                        Arguments = cmd,
-                        UseShellExecute = false,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true,
-                    },
-                };
-                p.OutputDataReceived += outputHandler;
-                p.ErrorDataReceived += outputHandler;
-                p.Start();
-                p.BeginErrorReadLine();
-                p.BeginOutputReadLine();
-                await Task.Factory.StartNew(p.WaitForExit);
-                p.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("执行命令失败，请检查输入的命令是否正确！");
-                MessageBox.Show(ex.Message);
-            }
-            setStartButton(true);
-            //appendLogText("Finished.\r\n");
-            setStatusText("Finished");
-        }
-
-        private void outputHandler(object sender, DataReceivedEventArgs e)
-        {
-            if (!String.IsNullOrEmpty(e.Data))
-            {
-                appendLogText(e.Data);
-            }
-        }
-
-        private void setStartButton(bool state)
+        private void SetStartButton(bool state)
         {
             if (!this.start_button.Dispatcher.CheckAccess())
             {
-                this.Dispatcher.Invoke(() => setStartButton(state));
+                this.Dispatcher.Invoke(() => SetStartButton(state));
             }
             else
             {
@@ -578,11 +581,11 @@ namespace L_SMASH___MP4_Muxer
             }
         }
 
-        private void appendLogText(String text)
+        private void AppendLogText(String text)
         {
             if (!this.logs.Dispatcher.CheckAccess())
             {
-                this.Dispatcher.Invoke(() => appendLogText(text));
+                this.Dispatcher.Invoke(() => AppendLogText(text));
             }
             else
             {
@@ -590,11 +593,11 @@ namespace L_SMASH___MP4_Muxer
             }
         }
 
-        private void setStatusText(String text)
+        private void SetStatusText(String text)
         {
             if (!this.Status_Block.Dispatcher.CheckAccess())
             {
-                this.Dispatcher.Invoke(() => setStatusText(text));
+                this.Dispatcher.Invoke(() => SetStatusText(text));
             }
             else
             {
@@ -602,107 +605,34 @@ namespace L_SMASH___MP4_Muxer
             }
         }
 
-        private String GetMuxerArgs()
+        private void SetProgressValue(double progress)
         {
-            String arg_muxer = "";
-            int n_track = 0;
-            // set video track
-            if (iv_path.Text != "")
+            if (!this.Status_Progress.Dispatcher.CheckAccess())
             {
-                int video_args = 0;
-                arg_muxer += " -i \"" + iv_path.Text + "\"";
-                if (iv_FPS.Text != "")
-                {
-                    arg_muxer += "?fps=" + iv_FPS.Text;
-                    ++video_args;
-                }
-                if (iv_name.Text != "")
-                {
-                    if (video_args == 0)
-                    {
-                        arg_muxer += "?handler=" + iv_name.Text;
-                    }
-                    else
-                    {
-                        arg_muxer += ",handler=" + iv_name.Text;
-                    }
-                    ++video_args;
-                }
-                if (iv_PAR_numberator.Text != "" && iv_PAR_denominator.Text != "")
-                {
-                    if (video_args == 0)
-                    {
-                        arg_muxer += "?par=" + iv_PAR_numberator.Text + ":" + iv_PAR_denominator.Text;
-                    }
-                    else
-                    {
-                        arg_muxer += ",par=" + iv_PAR_numberator.Text + ":" + iv_PAR_denominator.Text;
-                    }
-                    ++video_args;
-                }
-                ++n_track;
-            }
-            // set audio track
-            int ntracks = Audio_Tab.Items.Count;
-            for (int i = 1; i <= ntracks; ++i)
-            {
-                TextBox path = getAudioPathTB(i);
-                TextBox name = getAudioNameTB(i);
-                ComboBox language = getAudioLanguageCB(i);
-                NumericUpDown delay = getAudioDelayNUD(i);
-                if (path.Text != "")
-                {
-                    int audio_args = 0;
-                    arg_muxer += " -i \"" + path.Text + "\"";
-                    if (language.Text != "")
-                    {
-                        arg_muxer += "?1:language=" + language.Text;
-                        ++audio_args;
-                    }
-                    if (name.Text != "")
-                    {
-                        if (audio_args == 0)
-                        {
-                            arg_muxer += "?1:handler=" + name.Text;
-                        }
-                        else
-                        {
-                            arg_muxer += ",handler=" + name.Text;
-                        }
-                        ++audio_args;
-                    }
-                    if (delay.Value != 0)
-                    {
-                        if (audio_args == 0)
-                        {
-                            arg_muxer += "?1:encoder-delay=" + delay.Value;
-                        }
-                        else
-                        {
-                            arg_muxer += ",encoder-delay=" + delay.Value;
-                        }
-                        ++audio_args;
-                    }
-                    ++n_track;
-                }
-            }
-            // set chapter track
-            if (ic_path.Text != "")
-            {
-                arg_muxer += " --chapter \"" + ic_path.Text + "\"";
-                ++n_track;
-            }
-            // set output
-            if (n_track != 0)
-            {
-                arg_muxer += " -o \"" + out_path.Text + "\"";
+                this.Dispatcher.Invoke(() => SetProgressValue(progress));
             }
             else
             {
-                MessageBox.Show("Nothing to mux!");
-                return null;
+                this.Status_Progress.Value = progress;
+                if (progress == 100)
+                {
+                    SetStartButton(true);
+                    Status_Block.Text = "Finish";
+                    isProcessing = false;
+                }
             }
-            return arg_muxer;
+        }
+
+        private double GetProgressValue()
+        {
+            if (!this.Status_Progress.Dispatcher.CheckAccess())
+            {
+                return this.Dispatcher.Invoke(() => GetProgressValue());
+            }
+            else
+            {
+                return this.Status_Progress.Value;
+            }
         }
 
         private void file_DragOver(object sender, DragEventArgs e)
@@ -726,16 +656,17 @@ namespace L_SMASH___MP4_Muxer
         private void NumericOnly(System.Object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = IsTextNumeric(e.Text);
-
         }
 
         private static bool IsTextNumeric(String str)
         {
             System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("[^0-9]");
             return reg.IsMatch(str);
-
         }
 
         private ResourceSet audio_languages;
+        private JobProcessor jobProcessor;
+        private MuxerJob job;
+        private bool isProcessing;
     }
 }
