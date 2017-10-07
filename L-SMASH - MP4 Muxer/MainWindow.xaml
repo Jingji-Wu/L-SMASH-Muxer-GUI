@@ -7,25 +7,23 @@
         xmlns:talex="clr-namespace:TAlex.WPF.Controls"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="L_SMASH___MP4_Muxer.MainWindow"
         mc:Ignorable="d"
-        Title="L-SMASH - MP4 Muxer" Height="625" Width="525" MinHeight="600" MinWidth="525" MaxHeight="625" MaxWidth="525" ResizeMode="NoResize" Icon="Lm.ico">
+        Title="L-SMASH - MP4 Muxer" Height="625" Width="525" MinHeight="625" MinWidth="525" MaxHeight="625" ResizeMode="NoResize" Icon="Lm.ico">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="60*" />
+                            <ColumnDefinition Width="80*" />
+                            <ColumnDefinition Width="40*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem>
+            <StatusBarItem Grid.Column="0">
                 <TextBlock x:Name="Status_Block" TextWrapping="Wrap"/>
             </StatusBarItem>
-            <!--<Separator Grid.Column="1" />-->
-            <StatusBarItem Grid.Column="2">
+            <StatusBarItem Grid.Column="1">
                 <Grid Width="160" Height="16">
                     <ProgressBar x:Name="Status_Progress" Margin="0"/>
                     <TextBlock Text="{Binding ElementName=Status_Progress, Path=Value, StringFormat={}{0:0}%}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
