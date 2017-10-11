@@ -552,7 +552,7 @@ namespace L_SMASH___MP4_Muxer
             } 
         }
 
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private void StartMuxer(object sender, RoutedEventArgs e)
         {
             if (out_path.Text == "")
             {
@@ -567,6 +567,14 @@ namespace L_SMASH___MP4_Muxer
             job = new MuxerJob(GenerateVideoInfo(), GenerateAudioInfoList(), GenerateChapterInfo(), out_path.Text);
             isProcessing = true;
             jobProcessor.StartMuxer(job);
+        }
+
+        private void OpenQueue(object sender, RoutedEventArgs e)
+        {
+            QueueWindow qw = new QueueWindow();
+            qw.Title = "queue window";
+            //qw.ShowDialog();
+            qw.Show();
         }
 
         private void SetStartButton(bool state)

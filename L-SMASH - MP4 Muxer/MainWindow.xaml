@@ -150,8 +150,8 @@
                     </Grid.ColumnDefinitions>
                     <Button x:Name="about_button" Content="About" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" Click="ShowAbout" ToolTip="v1.0"/>
                     <Button x:Name="clear_button" Content="Clear" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" Click="ClearAll"/>
-                    <Button x:Name="start_button" Content="Start" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" Click="Start_Click"/>
-                    <Button x:Name="queue_button" Content="Queue" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" ToolTip="TODO" ToolTipService.ShowOnDisabled="True" IsEnabled="False"/>
+                    <Button x:Name="start_button" Content="Start" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" Click="StartMuxer"/>
+                    <Button x:Name="queue_button" Content="Queue" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Height="20" Margin="0" Click="OpenQueue"/>
                 </Grid>
             </Grid>
         </Grid>

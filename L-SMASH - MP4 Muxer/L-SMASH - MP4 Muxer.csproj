@@ -88,6 +88,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AudioLanguage.resx</DependentUpon>
     </Compile>
+    <Compile Include="QueueWindow.xaml.cs">
+      <DependentUpon>QueueWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\NumericUpDown.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -101,6 +104,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="QueueWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
